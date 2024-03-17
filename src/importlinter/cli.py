@@ -26,6 +26,7 @@ EXIT_STATUS_ERROR = 1
 )
 @click.option("--cache-dir", default=None, help="The directory to use for caching.")
 @click.option("--no-cache", is_flag=True, help="Disable caching.")
+@click.option("--cwd", default=None, help="The directory to use as the current working directory.")
 @click.option("--debug", is_flag=True, help="Run in debug mode.")
 @click.option(
     "--show-timings",
@@ -42,6 +43,7 @@ def lint_imports_command(
     contract: Tuple[str, ...],
     cache_dir: Optional[str],
     no_cache: bool,
+    cwd: Optional[str],
     debug: bool,
     show_timings: bool,
     verbose: bool,
@@ -54,6 +56,7 @@ def lint_imports_command(
         limit_to_contracts=contract,
         cache_dir=cache_dir,
         no_cache=no_cache,
+        cwd=cwd,
         is_debug_mode=debug,
         show_timings=show_timings,
         verbose=verbose,
@@ -66,6 +69,7 @@ def lint_imports(
     limit_to_contracts: Tuple[str, ...] = (),
     cache_dir: Optional[str] = None,
     no_cache: bool = False,
+    cwd: Optional[str] = None,
     is_debug_mode: bool = False,
     show_timings: bool = False,
     verbose: bool = False,
@@ -80,6 +84,7 @@ def lint_imports(
         limit_to_contracts: if supplied, only lint the contracts with the supplied ids.
         cache_dir:          the directory to use for caching, defaults to '.import_linter_cache'.
         no_cache:           if True, disable caching.
+        cwd:                the directory to use as the current working directory.
         is_debug_mode:      whether debugging should be turned on. In debug mode, exceptions are
                             not swallowed at the top level, so the stack trace can be seen.
         show_timings:       whether to show the times taken to build the graph and to check
@@ -90,7 +95,9 @@ def lint_imports(
         EXIT_STATUS_SUCCESS or EXIT_STATUS_ERROR.
     """
     # Add current directory to the path, as this doesn't happen automatically.
-    sys.path.insert(0, os.getcwd())
+    if cwd is None:
+        cwd = os.getcwd()
+    sys.path.insert(0, cwd)
 
     _configure_logging(verbose)
 
