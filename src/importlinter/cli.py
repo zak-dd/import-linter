@@ -97,7 +97,7 @@ def lint_imports(
     # Add current directory to the path, as this doesn't happen automatically.
     if cwd is None:
         cwd = os.getcwd()
-    sys.path.insert(0, cwd)
+    sys.path.insert(0, os.path.abspath(cwd))
 
     _configure_logging(verbose)
 
